@@ -3251,7 +3251,7 @@ class ParlerTTSForConditionalGeneration(PreTrainedModel):
             "`decoder_start_token_id` or `bos_token_id` has to be defined for encoder-decoder generation."
         )
 
-    def _get_cache(self, cache_implementation: str, max_batch_size: int, max_cache_len: int, model_kwargs) -> Cache:
+    def _get_cache(self, cache_implementation: str, batch_size: int, max_cache_len: int, model_kwargs) -> Cache:
         """
         Sets a cache for `generate`, that will persist across calls. A new cache will only be initialized a
         new `generate` call requires a larger cache.
@@ -3272,7 +3272,7 @@ class ParlerTTSForConditionalGeneration(PreTrainedModel):
         need_new_cache = (
             not hasattr(self, "_cache")
             or (not isinstance(cache_to_check, cache_cls))
-            or cache_to_check.max_batch_size != max_batch_size
+            or cache_to_check.batch_size != batch_size
             or cache_to_check.max_cache_len < max_cache_len
         )
 
@@ -3289,7 +3289,7 @@ class ParlerTTSForConditionalGeneration(PreTrainedModel):
                 cache_dtype = self.dtype
             cache_kwargs = {
                 "config": self.config.decoder,
-                "max_batch_size": max_batch_size,
+                "batch_size": batch_size,
                 "max_cache_len": max_cache_len,
                 "device": self.device,
                 "dtype": cache_dtype,
